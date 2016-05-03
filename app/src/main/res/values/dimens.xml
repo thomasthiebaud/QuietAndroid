@@ -1,0 +1,17 @@
+<resources>
+    <dimen name="small">4dp</dimen>
+    <dimen name="regular">8dp</dimen>
+    <dimen name="big">16dp</dimen>
+    <dimen name="huge">32dp</dimen>
+
+    <dimen name="title_margin">64dp</dimen>
+    <dimen name="subtitle_margin">@dimen/huge</dimen>
+    <dimen name="appbar_height">256dp</dimen>
+
+    <dimen name="cardview_elevation">2dp</dimen>
+    <dimen name="toolbar_elevation">4dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
+
+    <dimen name="activity_horizontal_margin">@dimen/big</dimen>
+    <dimen name="activity_vertical_margin">@dimen/big</dimen>
+</resources>
