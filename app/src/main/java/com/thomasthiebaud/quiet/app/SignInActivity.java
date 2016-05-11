@@ -1,10 +1,12 @@
-package com.thomasthiebaud.quiet.app.signin;
+package com.thomasthiebaud.quiet.app;
 
+import android.Manifest;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -14,22 +16,22 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.karumi.dexter.listener.multi.SnackbarOnAnyDeniedMultiplePermissionsListener;
 import com.thomasthiebaud.quiet.BuildConfig;
-import com.thomasthiebaud.quiet.app.error.ErrorActivity;
-import com.thomasthiebaud.quiet.app.success.SuccessActivity;
+import com.thomasthiebaud.quiet.utils.Body;
 import com.thomasthiebaud.quiet.contracts.SignInContract;
 import com.thomasthiebaud.quiet.services.HttpService;
-import com.thomasthiebaud.quiet.services.Message;
+import com.thomasthiebaud.quiet.model.Message;
 import com.thomasthiebaud.quiet.R;
-
-import java.util.HashMap;
+import com.thomasthiebaud.quiet.utils.Utils;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
-
     private static final String TAG = SignInActivity.class.getSimpleName();
 
     private GoogleApiClient mGoogleApiClient;
@@ -39,6 +41,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign);
 
+        Dexter.initialize(this);
+
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -47,7 +51,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
     }
@@ -71,6 +75,32 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         }
     }
 
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            final GoogleSignInAccount acct = result.getSignInAccount();
+
+            Body body = new Body().add("idToken", acct.getIdToken());
+
+            Call<Message> results = HttpService.getInstance().getQuietApi().signIn(body);
+            results.enqueue(new Callback<Message>() {
+                @Override
+                public void onResponse(Call<Message> call, Response<Message> response) {
+                    Utils.saveIdToken(getApplicationContext(), acct.getIdToken());
+                    checkPermission();
+                }
+
+                @Override
+                public void onFailure(Call<Message> call, Throwable t) {
+                    Log.e(TAG, t.toString());
+                    DisplayActivity.displayError(getApplicationContext(), t.getMessage());
+                }
+            });
+        } else {
+            //DisplayActivity.displayError(getApplicationContext(), "Impossible to signIn");
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -81,36 +111,13 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         }
     }
 
-    private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
-            GoogleSignInAccount acct = result.getSignInAccount();
-
-            HashMap<String, Object> body = new HashMap<>();
-            body.put("idToken", acct.getIdToken());
-
-            Call<Message> results = HttpService.getInstance().getQuietApi().signIn(body);
-            results.enqueue(new Callback<Message>() {
-                @Override
-                public void onResponse(Call<Message> call, Response<Message> response) {
-                    Log.w(TAG, String.valueOf(response.body().getMessage()));
-                    Intent intent = new Intent(getBaseContext(), SuccessActivity.class);
-                    intent.putExtra("title", "Success");
-                    intent.putExtra("description", "The app is running successfully");
-                    startActivity(intent);
-                }
-
-                @Override
-                public void onFailure(Call<Message> call, Throwable t) {
-                    Log.e(TAG, t.toString());
-                    Intent intent = new Intent(getBaseContext(), ErrorActivity.class);
-                    intent.putExtra("title", "Error");
-                    intent.putExtra("description", t.getMessage());
-                    startActivity(intent);
-                }
-            });
-        } else {
-        }
+    private void checkPermission() {
+        MultiplePermissionsListener snackbarMultiplePermissionsListener =
+                SnackbarOnAnyDeniedMultiplePermissionsListener.Builder
+                        .with((ViewGroup) findViewById(R.id.rootView), "Read phone state and read contacts are needed to check if this incoming call is dangerous.")
+                        .withOpenSettingsButton("Settings")
+                        .build();
+        Dexter.checkPermissions(snackbarMultiplePermissionsListener, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CONTACTS);
     }
 
     private void signIn() {
@@ -121,9 +128,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        Intent intent = new Intent(getBaseContext(), ErrorActivity.class);
-        intent.putExtra("title", "Error");
-        intent.putExtra("description", "Google connection failed");
+        DisplayActivity.displayError(getApplicationContext(), "Google connection failed");
     }
 
     @Override

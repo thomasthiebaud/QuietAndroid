@@ -1,4 +1,4 @@
-package com.thomasthiebaud.quiet.services;
+package com.thomasthiebaud.quiet.utils;
 
 import java.security.cert.CertificateException;
 

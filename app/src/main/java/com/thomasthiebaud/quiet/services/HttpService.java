@@ -1,5 +1,7 @@
 package com.thomasthiebaud.quiet.services;
 
+import com.thomasthiebaud.quiet.utils.CustomTrust;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
