@@ -1,15 +1,26 @@
 package com.thomasthiebaud.quiet.app;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.thomasthiebaud.quiet.R;
-import com.thomasthiebaud.quiet.contracts.IntentContract;
+import com.thomasthiebaud.quiet.contract.DatabaseContract;
+import com.thomasthiebaud.quiet.contract.IntentContract;
+import com.thomasthiebaud.quiet.contract.LoaderContract;
 
-public class DetailsActivity extends AppCompatActivity {
+import java.util.Arrays;
+
+public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String TAG = DetailsActivity.class.getSimpleName();
+    private String number;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,21 +28,59 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
 
         Intent intent = getIntent();
-        String number = intent.getStringExtra(IntentContract.PHONE_NUMBER);
-        int score = intent.getIntExtra(IntentContract.SCORE, 0);
-        int scam = intent.getIntExtra(IntentContract.SCAM, 0);
-        int ad = intent.getIntExtra(IntentContract.AD, 0);
+        this.number = intent.getStringExtra(IntentContract.PHONE_NUMBER);
 
-        TextView numberView = (TextView) findViewById(R.id.number);
-        TextView scoreView = (TextView) findViewById(R.id.score);
-        DonutProgress scamView = (DonutProgress) findViewById(R.id.scam);
-        DonutProgress adView = (DonutProgress) findViewById(R.id.ad);
+        getSupportLoaderManager().initLoader(LoaderContract.PHONE_LOADER, null, this);
+    }
 
-        numberView.setText(number);
-        scoreView.setText(score + "");
-        scamView.setMax(score);
-        scamView.setProgress(scam);
-        adView.setMax(score);
-        adView.setProgress(ad);
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.e(TAG, "Load");
+        CursorLoader cursorLoader = null;
+        switch (id) {
+            case LoaderContract.PHONE_LOADER:
+                cursorLoader = new CursorLoader(
+                        this,
+                        DatabaseContract.PHONE_CONTENT_URI.buildUpon().appendPath(this.number).build(),
+                        null,
+                        DatabaseContract.Phone.COLUMN_NUMBER + "= ?",
+                        new String[]{this.number},
+                        null
+                );
+                break;
+        }
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        switch (loader.getId()) {
+            case LoaderContract.PHONE_LOADER:
+                if(data != null && data.moveToFirst()) {
+                    Log.e(TAG, Arrays.toString(data.getColumnNames()));
+                    String number = data.getString(DatabaseContract.Phone.INDEX_NUMBER);
+                    int score = data.getInt(DatabaseContract.Phone.INDEX_SCORE);
+                    int scam = data.getInt(DatabaseContract.Phone.INDEX_SCAM);
+                    int ad = data.getInt(DatabaseContract.Phone.INDEX_AD);
+                    int scamPercent = scam * 100 / score;
+                    int adPercent = ad * 100 / score;
+
+                    TextView numberView = (TextView) findViewById(R.id.number);
+                    TextView scoreView = (TextView) findViewById(R.id.score);
+                    DonutProgress scamView = (DonutProgress) findViewById(R.id.scam);
+                    DonutProgress adView = (DonutProgress) findViewById(R.id.ad);
+
+                    numberView.setText(number);
+                    scoreView.setText(score + "");
+                    scamView.setProgress(scamPercent);
+                    adView.setProgress(adPercent);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }

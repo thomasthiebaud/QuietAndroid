@@ -1,6 +1,7 @@
 package com.thomasthiebaud.quiet.utils;
 
 import java.security.cert.CertificateException;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -50,8 +51,10 @@ public final class CustomTrust {
                     return true;
                 }
             });
-            builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
-
+            builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .connectTimeout(1, TimeUnit.SECONDS)
+                .readTimeout(1, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(false);
             OkHttpClient okHttpClient = builder.build();
             return okHttpClient;
         } catch (Exception e) {

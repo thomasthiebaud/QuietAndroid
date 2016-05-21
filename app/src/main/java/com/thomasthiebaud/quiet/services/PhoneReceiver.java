@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -18,14 +19,15 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.thomasthiebaud.quiet.R;
+import com.thomasthiebaud.quiet.contract.DatabaseContract;
 import com.thomasthiebaud.quiet.model.Content;
 import com.thomasthiebaud.quiet.model.Message;
 import com.thomasthiebaud.quiet.utils.Body;
 import com.thomasthiebaud.quiet.app.DetailsActivity;
 import com.thomasthiebaud.quiet.app.DisplayActivity;
 import com.thomasthiebaud.quiet.utils.Utils;
-import com.thomasthiebaud.quiet.contracts.IntentContract;
-import com.thomasthiebaud.quiet.contracts.NotificationContract;
+import com.thomasthiebaud.quiet.contract.IntentContract;
+import com.thomasthiebaud.quiet.contract.NotificationContract;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,7 +75,7 @@ public class PhoneReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         String number = intent.getStringExtra("number");
         if("Ad".equals(action)) {
-            Toast.makeText(context, "AD", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "COLUMN_AD", Toast.LENGTH_SHORT).show();
             NotificationManager mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyManager.cancel(NotificationContract.REPORTED_NOTIFICATION_ID);
             this.reportPhone(number, true);
@@ -81,7 +83,7 @@ public class PhoneReceiver extends BroadcastReceiver {
             NotificationManager mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyManager.cancel(NotificationContract.REPORTED_NOTIFICATION_ID);
         } else if ("Scam".equals(action)) {
-            Toast.makeText(context, "SCAM", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "COLUMN_SCAM", Toast.LENGTH_SHORT).show();
             NotificationManager mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyManager.cancel(NotificationContract.REPORTED_NOTIFICATION_ID);
             this.reportPhone(number, false);
@@ -109,12 +111,11 @@ public class PhoneReceiver extends BroadcastReceiver {
             @Override
             public void onFailure(Call<Message> call, Throwable t) {
                 Log.e(TAG, t.toString());
-                DisplayActivity.displayError(context, t.getMessage());
             }
         });
     }
 
-    private void phoneRinging(Context context, String incomingNumber) {
+    private void phoneRinging(final Context context, final String incomingNumber) {
         if(this.contactExists(context, incomingNumber))
             return;
 
@@ -125,9 +126,22 @@ public class PhoneReceiver extends BroadcastReceiver {
             @Override
             public void onResponse(Call<Message> call, final Response<Message> response) {
                 if(response.code() == 200) {
+                    final Content content = response.body().getContent();
+
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseContract.Phone.COLUMN_NUMBER, content.getNumber());
+                    values.put(DatabaseContract.Phone.COLUMN_SCORE, content.getScore());
+                    values.put(DatabaseContract.Phone.COLUMN_SCAM, content.getScam());
+                    values.put(DatabaseContract.Phone.COLUMN_AD, content.getAd());
+
+                    context.getContentResolver().insert(
+                            DatabaseContract.PHONE_CONTENT_URI.buildUpon().appendPath(incomingNumber).build(),
+                            values
+                    );
+
                     new Handler().postDelayed(new Runnable() {
                         public void run() {
-                            createIncomingCallNotification(response.body().getContent());
+                            createIncomingCallNotification(content);
                         }
                     }, 500);
                 }
@@ -136,9 +150,31 @@ public class PhoneReceiver extends BroadcastReceiver {
             @Override
             public void onFailure(Call<Message> call, Throwable t) {
                 Log.e(TAG, t.toString());
+                Cursor cursor = context.getContentResolver().query(
+                        DatabaseContract.PHONE_CONTENT_URI.buildUpon().appendPath(incomingNumber).build(),
+                        null,
+                        DatabaseContract.Phone.COLUMN_NUMBER + "= ?",
+                        new String[]{incomingNumber},
+                        null
+                );
+
+                try {
+                    if (cursor.moveToFirst()) {
+                        Content content = new Content();
+                        content.setNumber(cursor.getString(DatabaseContract.Phone.INDEX_NUMBER));
+                        content.setScore(cursor.getInt(DatabaseContract.Phone.INDEX_SCORE));
+                        content.setAd(cursor.getInt(DatabaseContract.Phone.INDEX_AD));
+                        content.setScam(cursor.getInt(DatabaseContract.Phone.INDEX_SCAM));
+                        createIncomingCallNotification(content);
+                    } else {
+                        Log.e(TAG, "Not cached");
+                    }
+                } finally {
+                    if (cursor != null)
+                        cursor.close();
+                }
             }
         });
-
     }
 
     private boolean contactExists(Context context, String number) {

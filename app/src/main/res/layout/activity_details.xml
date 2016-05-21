@@ -71,5 +71,5 @@
         android:layout_gravity="fill_horizontal"
         android:gravity="center"
         android:layout_rowWeight="1"
-        android:text="For features in next versions of the applications"/>
+        android:text="More features in next versions of the applications"/>
 </GridLayout>

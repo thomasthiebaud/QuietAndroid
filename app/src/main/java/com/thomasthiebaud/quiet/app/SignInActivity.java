@@ -21,7 +21,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.karumi.dexter.listener.multi.SnackbarOnAnyDeniedMultiplePermissionsListener;
 import com.thomasthiebaud.quiet.BuildConfig;
 import com.thomasthiebaud.quiet.utils.Body;
-import com.thomasthiebaud.quiet.contracts.SignInContract;
+import com.thomasthiebaud.quiet.contract.SignInContract;
 import com.thomasthiebaud.quiet.services.HttpService;
 import com.thomasthiebaud.quiet.model.Message;
 import com.thomasthiebaud.quiet.R;
