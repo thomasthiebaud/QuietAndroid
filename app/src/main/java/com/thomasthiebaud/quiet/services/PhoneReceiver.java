@@ -68,6 +68,7 @@ public class PhoneReceiver extends BroadcastReceiver {
                         createReportNotification(incomingNumber);
                         wasLastCallOffHooked = false;
                     }
+                    updateWidget(R.drawable.running, "Quiet is running");
                 }
             }
         },PhoneStateListener.LISTEN_CALL_STATE);
@@ -82,6 +83,7 @@ public class PhoneReceiver extends BroadcastReceiver {
         } else if ("Ok".equals(action)) {
             NotificationManager mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyManager.cancel(NotificationContract.REPORTED_NOTIFICATION_ID);
+            this.updateWidget(R.drawable.safe, "Safe");
         } else if ("Scam".equals(action)) {
             Toast.makeText(context, "COLUMN_SCAM", Toast.LENGTH_SHORT).show();
             NotificationManager mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -223,6 +225,7 @@ public class PhoneReceiver extends BroadcastReceiver {
                         .setPriority(Notification.PRIORITY_MAX)
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setContentIntent(pIntent)
+                        .setAutoCancel(true)
                         .addAction(R.drawable.reported, "Ad", pendingIntentYes)
                         .addAction(R.drawable.safe, "Ok", pendingIntentMaybe)
                         .addAction(R.drawable.dangerous, "Scam", pendingIntentNo);
@@ -267,6 +270,7 @@ public class PhoneReceiver extends BroadcastReceiver {
             icon = R.drawable.dangerous;
             contentText = "Dangerous";
         }
+        this.updateWidget(icon, contentText);
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context)
@@ -275,6 +279,7 @@ public class PhoneReceiver extends BroadcastReceiver {
                         .setContentText(contentText)
                         .setPriority(Notification.PRIORITY_MAX)
                         .setDefaults(Notification.DEFAULT_ALL)
+                        .setAutoCancel(true)
                         .setContentIntent(pIntent)
                         .setStyle(inboxStyle);
 
@@ -282,5 +287,12 @@ public class PhoneReceiver extends BroadcastReceiver {
 
         NotificationManager mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyManager.notify(NotificationContract.INCOMING_CALL_NOTIFICATION_ID, noti);
+    }
+
+    private void updateWidget(int icon, String state) {
+        Intent updateWidget = new Intent("com.thomasthiebaud.quiet.UPDATE_WIDGET_STATE");
+        updateWidget.putExtra("icon", icon);
+        updateWidget.putExtra("state", state);
+        context.sendBroadcast(updateWidget);
     }
 }

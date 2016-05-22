@@ -2,6 +2,7 @@ package com.thomasthiebaud.quiet.app;
 
 import android.Manifest;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.karumi.dexter.listener.multi.SnackbarOnAnyDeniedMultiplePermissionsListener;
 import com.thomasthiebaud.quiet.BuildConfig;
@@ -26,6 +30,8 @@ import com.thomasthiebaud.quiet.services.HttpService;
 import com.thomasthiebaud.quiet.model.Message;
 import com.thomasthiebaud.quiet.R;
 import com.thomasthiebaud.quiet.utils.Utils;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -112,12 +118,21 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     private void checkPermission() {
-        MultiplePermissionsListener snackbarMultiplePermissionsListener =
-                SnackbarOnAnyDeniedMultiplePermissionsListener.Builder
-                        .with((ViewGroup) findViewById(R.id.rootView), "Read phone state and read contacts are needed to check if this incoming call is dangerous.")
-                        .withOpenSettingsButton("Settings")
-                        .build();
-        Dexter.checkPermissions(snackbarMultiplePermissionsListener, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CONTACTS);
+        Dexter.checkPermissions(new MultiplePermissionsListener() {
+            @Override
+            public void onPermissionsChecked(MultiplePermissionsReport report) {
+                if(report.areAllPermissionsGranted())
+                    DisplayActivity.displaySuccess(getApplicationContext(), "The app is running");
+                else {
+                    Snackbar.make(findViewById(R.id.rootView), "Read phone state and read contacts are needed to check if this incoming call is dangerous.", Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                token.continuePermissionRequest();
+            }
+        }, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CONTACTS);
     }
 
     private void signIn() {
