@@ -19,6 +19,7 @@ import com.thomasthiebaud.quiet.R;
 import com.thomasthiebaud.quiet.contract.DatabaseContract;
 import com.thomasthiebaud.quiet.contract.IntentContract;
 import com.thomasthiebaud.quiet.contract.LoaderContract;
+import com.thomasthiebaud.quiet.utils.Utils;
 
 public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = DetailsActivity.class.getSimpleName();
@@ -38,6 +39,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
         Intent intent = getIntent();
         this.number = intent.getStringExtra(IntentContract.PHONE_NUMBER);
+        Utils.removeNumber(getApplicationContext());
 
         getSupportLoaderManager().initLoader(LoaderContract.PHONE_LOADER, null, this);
     }
@@ -96,5 +98,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {}
+    public void onLoaderReset(Loader<Cursor> loader) {
+        loader.reset();
+    }
 }

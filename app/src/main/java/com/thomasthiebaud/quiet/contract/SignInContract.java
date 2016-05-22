@@ -5,4 +5,5 @@ package com.thomasthiebaud.quiet.contract;
  */
 public interface SignInContract {
     int SIGN_IN_REQUEST_CODE = 9876;
+    String ID_TOKEN = "idToken";
 }

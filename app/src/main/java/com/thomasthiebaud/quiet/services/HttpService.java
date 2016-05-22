@@ -1,5 +1,6 @@
 package com.thomasthiebaud.quiet.services;
 
+import com.thomasthiebaud.quiet.BuildConfig;
 import com.thomasthiebaud.quiet.utils.CustomTrust;
 
 import retrofit2.Retrofit;

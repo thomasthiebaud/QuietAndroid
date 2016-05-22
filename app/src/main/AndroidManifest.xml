@@ -32,9 +32,9 @@
         <receiver android:name=".services.PhoneReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
-                <action android:name="Ad"/>
-                <action android:name="Ok"/>
-                <action android:name="Scam"/>
+                <action android:name="com.thomasthiebaud.quiet.AD"/>
+                <action android:name="com.thomasthiebaud.quiet.OK"/>
+                <action android:name="com.thomasthiebaud.quiet.SCAM"/>
             </intent-filter>
         </receiver>
 

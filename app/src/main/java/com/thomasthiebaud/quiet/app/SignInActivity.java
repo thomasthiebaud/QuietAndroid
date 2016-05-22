@@ -1,6 +1,7 @@
 package com.thomasthiebaud.quiet.app;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,7 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.thomasthiebaud.quiet.BuildConfig;
+import com.thomasthiebaud.quiet.contract.IntentContract;
 import com.thomasthiebaud.quiet.utils.Body;
 import com.thomasthiebaud.quiet.contract.SignInContract;
 import com.thomasthiebaud.quiet.services.HttpService;
@@ -104,7 +106,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         if (result.isSuccess()) {
             final GoogleSignInAccount acct = result.getSignInAccount();
 
-            Body body = new Body().add("idToken", acct.getIdToken());
+            Body body = new Body().add(SignInContract.ID_TOKEN, acct.getIdToken());
 
             Call<Message> results = HttpService.getInstance().getQuietApi().signIn(body);
             results.enqueue(new Callback<Message>() {
@@ -141,6 +143,10 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport report) {
                 if(report.areAllPermissionsGranted()) {
+                    Context context = getApplicationContext();
+                    Utils.isRunning(context, true);
+                    Utils.updateWidget(context, R.drawable.running, context.getString(R.string.quiet_is_running));
+
                     String title = getResources().getString(R.string.running_app_title);
                     String description = getResources().getString(R.string.running_app_description);
                     DisplayActivity.displaySuccess(getApplicationContext(),title, description);

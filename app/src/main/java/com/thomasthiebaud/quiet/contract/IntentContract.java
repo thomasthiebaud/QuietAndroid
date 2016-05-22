@@ -14,4 +14,8 @@ public interface IntentContract {
     String ICON = "icon";
     String STATUS = "status";
     String OK = "ok";
+    String WIDGET_ACTION = "com.thomasthiebaud.quiet.UPDATE_WIDGET_STATE";
+    String AD_ACTION = "com.thomasthiebaud.quiet.AD";
+    String OK_ACTION = "com.thomasthiebaud.quiet.OK";
+    String SCAM_ACTION = "com.thomasthiebaud.quiet.SCAM";
 }
