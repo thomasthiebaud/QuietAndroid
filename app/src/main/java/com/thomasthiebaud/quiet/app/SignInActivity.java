@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -41,11 +43,15 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     private static final String TAG = SignInActivity.class.getSimpleName();
 
     private GoogleApiClient mGoogleApiClient;
+    private Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign);
+
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        tracker = application.getDefaultTracker();
 
         Dexter.initialize(this);
 
@@ -79,6 +85,13 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 }
             });
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        tracker.setScreenName("SignIn : " + SignInActivity.class.getName());
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     private void handleSignInResult(GoogleSignInResult result) {

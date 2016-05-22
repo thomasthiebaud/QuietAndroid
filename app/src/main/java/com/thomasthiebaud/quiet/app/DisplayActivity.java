@@ -7,16 +7,22 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.thomasthiebaud.quiet.R;
 import com.thomasthiebaud.quiet.contract.IntentContract;
 
 public final class DisplayActivity extends AppCompatActivity {
     private static final String TAG = DisplayActivity.class.getSimpleName();
+    private Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display);
+
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        tracker = application.getDefaultTracker();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -30,6 +36,13 @@ public final class DisplayActivity extends AppCompatActivity {
 
         if(intent.hasExtra(IntentContract.DESCRIPTION))
             descriptionView.setText(intent.getStringExtra(IntentContract.DESCRIPTION));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        tracker.setScreenName("Display : " + DisplayActivity.class.getName());
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     public static void displayError(Context context, String description) {

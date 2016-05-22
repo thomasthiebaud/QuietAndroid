@@ -11,6 +11,8 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.thomasthiebaud.quiet.R;
 import com.thomasthiebaud.quiet.contract.DatabaseContract;
 import com.thomasthiebaud.quiet.contract.IntentContract;
@@ -20,6 +22,7 @@ import java.util.Arrays;
 
 public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = DetailsActivity.class.getSimpleName();
+    private Tracker tracker;
     private String number;
 
     @Override
@@ -27,11 +30,22 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        tracker = application.getDefaultTracker();
+
         Intent intent = getIntent();
         this.number = intent.getStringExtra(IntentContract.PHONE_NUMBER);
 
         getSupportLoaderManager().initLoader(LoaderContract.PHONE_LOADER, null, this);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        tracker.setScreenName("Details : " + DetailsActivity.class.getName());
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
