@@ -16,10 +16,10 @@
     <GridLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:alignmentMode="alignBounds"
-        android:columnCount="2"
-        android:rowCount="6">
+        android:columnCount="3"
+        android:rowCount="4">
 
         <TextView
             android:layout_columnSpan="2"
@@ -72,8 +72,9 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="2"
+            android:layout_columnSpan="2"
+            android:layout_rowSpan="2"
+            android:layout_columnWeight="2"
             app:arc_finished_color="@color/primary_dark"
             app:arc_unfinished_color="@color/primary"
             app:arc_text_color="@color/primary_dark"
@@ -84,8 +85,9 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="2"
+            android:layout_columnSpan="2"
+            android:layout_rowSpan="2"
+            android:layout_columnWeight="2"
             app:arc_finished_color="@color/primary_dark"
             app:arc_unfinished_color="@color/primary"
             app:arc_text_color="@color/primary_dark"

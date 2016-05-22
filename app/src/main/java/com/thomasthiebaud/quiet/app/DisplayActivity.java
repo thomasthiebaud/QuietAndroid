@@ -26,15 +26,17 @@ public final class DisplayActivity extends AppCompatActivity {
         tracker = application.getDefaultTracker();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         TextView titleView = (TextView) findViewById(R.id.title);
         TextView descriptionView = (TextView) findViewById(R.id.description);
         ImageView statusIcon = (ImageView) findViewById(R.id.status_icon);
 
         Intent intent = getIntent();
-        if(intent.hasExtra(IntentContract.TITLE))
-            titleView.setText(intent.getStringExtra(IntentContract.TITLE));
+        if(intent.hasExtra(IntentContract.TITLE)) {
+            String title = intent.getStringExtra(IntentContract.TITLE);
+            titleView.setText(title);
+            toolbar.setTitle(title);
+        }
 
         if(intent.hasExtra(IntentContract.DESCRIPTION))
             descriptionView.setText(intent.getStringExtra(IntentContract.DESCRIPTION));

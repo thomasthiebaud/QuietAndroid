@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.Explode;
 import android.util.Log;
 import android.view.View;
 
@@ -90,6 +91,12 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         super.onResume();
         tracker.setScreenName("SignIn : " + SignInActivity.class.getName());
         tracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 
     private void handleSignInResult(GoogleSignInResult result) {

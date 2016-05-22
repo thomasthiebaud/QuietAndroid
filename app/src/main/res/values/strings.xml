@@ -13,6 +13,7 @@
     <string name="ad">Ad</string>
     <string name="ok">Ok</string>
     <string name="scam">Scam</string>
+    <string name="details">Details</string>
 
     <plurals name="report_ad">
         <item quantity="one">- %1$s time as an ad</item>
