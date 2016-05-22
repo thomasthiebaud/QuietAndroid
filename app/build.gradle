@@ -40,6 +40,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
     compile 'com.karumi:dexter:2.2.2'
+
     compile 'com.github.lzyzsd:circleprogress:1.1.0@aar'
 }
 

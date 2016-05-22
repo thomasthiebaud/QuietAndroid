@@ -5,21 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:background="@android:color/white"
-    android:padding="@dimen/widget_margin">
+    android:padding="@dimen/widget_padding"
+    android:background="@color/primary">
 
     <ImageView
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/common_full_open_on_phone"/>
+        android:layout_marginLeft="@dimen/small"
+        android:layout_marginStart="@dimen/small"
+        android:layout_marginRight="@dimen/small"
+        android:layout_marginEnd="@dimen/small"
+        android:src="@drawable/running"/>
 
     <TextView
-        android:id="@+id/state"
+        android:id="@+id/status"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="test"
+        android:layout_marginLeft="@dimen/small"
+        android:layout_marginStart="@dimen/small"
         android:gravity="center"
-        android:textColor="@android:color/black" />
+        android:textColor="@color/white" />
 </LinearLayout>

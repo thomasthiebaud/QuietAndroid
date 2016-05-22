@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/white</item>
     </style>
 
     <style name="Theme.Quiet.Title">
@@ -15,5 +16,12 @@
     <style name="Theme.Quiet.Button">
         <item name="android:background">@color/primary_dark</item>
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="Theme.Quiet.Toolbar">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@color/primary_dark</item>
+        <item name="android:textSize">@dimen/text_regular</item>
     </style>
 </resources>

@@ -9,6 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.ContactsContract;
@@ -76,7 +79,6 @@ public class PhoneReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         String number = intent.getStringExtra("number");
         if("Ad".equals(action)) {
-            Toast.makeText(context, "COLUMN_AD", Toast.LENGTH_SHORT).show();
             NotificationManager mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyManager.cancel(NotificationContract.REPORTED_NOTIFICATION_ID);
             this.reportPhone(number, true);
@@ -85,7 +87,6 @@ public class PhoneReceiver extends BroadcastReceiver {
             mNotifyManager.cancel(NotificationContract.REPORTED_NOTIFICATION_ID);
             this.updateWidget(R.drawable.safe, "Safe");
         } else if ("Scam".equals(action)) {
-            Toast.makeText(context, "COLUMN_SCAM", Toast.LENGTH_SHORT).show();
             NotificationManager mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyManager.cancel(NotificationContract.REPORTED_NOTIFICATION_ID);
             this.reportPhone(number, false);
@@ -200,35 +201,34 @@ public class PhoneReceiver extends BroadcastReceiver {
 
         //Yes intent
         Intent adReceive = new Intent();
-        adReceive.setAction("Ad");
-        adReceive.putExtra("number", incomingNumber);
+        adReceive.setAction(IntentContract.AD);
+        adReceive.putExtra(IntentContract.PHONE_NUMBER, incomingNumber);
         PendingIntent pendingIntentYes = PendingIntent.getBroadcast(context, 12345, adReceive, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //Maybe intent
         Intent okReceive = new Intent();
-        okReceive.setAction("Ok");
-        okReceive.putExtra("number", incomingNumber);
+        okReceive.setAction(IntentContract.OK);
+        okReceive.putExtra(IntentContract.PHONE_NUMBER, incomingNumber);
         PendingIntent pendingIntentMaybe = PendingIntent.getBroadcast(context, 12345, okReceive, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //No intent
         Intent scamReceive = new Intent();
-        scamReceive.setAction("Scam");
-        scamReceive.putExtra("number", incomingNumber);
+        scamReceive.setAction(IntentContract.SCAM);
+        scamReceive.putExtra(IntentContract.PHONE_NUMBER, incomingNumber);
         PendingIntent pendingIntentNo = PendingIntent.getBroadcast(context, 12345, scamReceive, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.safe)
-                        .setContentTitle("How was your last call ?")
-                        .setContentText("This help us improving the application")
+                        .setContentTitle(context.getString(R.string.call_feedback))
                         .setPriority(Notification.PRIORITY_MAX)
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setContentIntent(pIntent)
                         .setAutoCancel(true)
-                        .addAction(R.drawable.reported, "Ad", pendingIntentYes)
-                        .addAction(R.drawable.safe, "Ok", pendingIntentMaybe)
-                        .addAction(R.drawable.dangerous, "Scam", pendingIntentNo);
+                        .addAction(R.drawable.reported, context.getString(R.string.ad), pendingIntentYes)
+                        .addAction(R.drawable.safe, context.getString(R.string.ok), pendingIntentMaybe)
+                        .addAction(R.drawable.dangerous, context.getString(R.string.scam), pendingIntentNo);
 
         Notification noti = builder.build();
 
@@ -274,7 +274,8 @@ public class PhoneReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(icon)
+                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), icon))
+                        .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("Call from : " + number)
                         .setContentText(contentText)
                         .setPriority(Notification.PRIORITY_MAX)
@@ -289,10 +290,10 @@ public class PhoneReceiver extends BroadcastReceiver {
         mNotifyManager.notify(NotificationContract.INCOMING_CALL_NOTIFICATION_ID, noti);
     }
 
-    private void updateWidget(int icon, String state) {
+    private void updateWidget(int icon, String status) {
         Intent updateWidget = new Intent("com.thomasthiebaud.quiet.UPDATE_WIDGET_STATE");
-        updateWidget.putExtra("icon", icon);
-        updateWidget.putExtra("state", state);
+        updateWidget.putExtra(IntentContract.ICON, icon);
+        updateWidget.putExtra(IntentContract.STATUS, status);
         context.sendBroadcast(updateWidget);
     }
 }

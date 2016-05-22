@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -29,6 +30,7 @@ public final class DisplayActivity extends AppCompatActivity {
 
         TextView titleView = (TextView) findViewById(R.id.title);
         TextView descriptionView = (TextView) findViewById(R.id.description);
+        ImageView statusIcon = (ImageView) findViewById(R.id.status_icon);
 
         Intent intent = getIntent();
         if(intent.hasExtra(IntentContract.TITLE))
@@ -36,6 +38,9 @@ public final class DisplayActivity extends AppCompatActivity {
 
         if(intent.hasExtra(IntentContract.DESCRIPTION))
             descriptionView.setText(intent.getStringExtra(IntentContract.DESCRIPTION));
+
+        if(intent.hasExtra(IntentContract.ICON))
+            statusIcon.setImageResource(intent.getIntExtra(IntentContract.ICON, R.drawable.safe));
     }
 
     @Override
@@ -45,18 +50,20 @@ public final class DisplayActivity extends AppCompatActivity {
         tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-    public static void displayError(Context context, String description) {
+    public static void displayError(Context context, String title, String description) {
         Intent intent = new Intent(context, DisplayActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(IntentContract.TITLE, "Error");
+        intent.putExtra(IntentContract.ICON, R.drawable.error);
+        intent.putExtra(IntentContract.TITLE, title);
         intent.putExtra(IntentContract.DESCRIPTION, description);
         context.startActivity(intent);
     }
 
-    public static void displaySuccess(Context context, String description) {
+    public static void displaySuccess(Context context, String title, String description) {
         Intent intent = new Intent(context, DisplayActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(IntentContract.TITLE, "Success");
+        intent.putExtra(IntentContract.ICON, R.drawable.success);
+        intent.putExtra(IntentContract.TITLE, title);
         intent.putExtra(IntentContract.DESCRIPTION, description);
         context.startActivity(intent);
     }

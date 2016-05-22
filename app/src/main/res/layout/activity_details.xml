@@ -14,7 +14,9 @@
         android:layout_gravity="fill_horizontal"
         android:gravity="center"
         android:layout_rowWeight="1"
-        android:text="Incoming call from"/>
+        android:elevation="@dimen/toolbar_elevation"
+        android:text="@string/incoming_call_from"
+        style="@style/Theme.Quiet.Toolbar"/>
 
     <TextView
         android:id="@+id/number"
@@ -29,47 +31,51 @@
         android:layout_gravity="fill_horizontal"
         android:gravity="center"
         android:layout_rowWeight="1"
-        android:text="Reported"/>
+        android:elevation="@dimen/toolbar_elevation"
+        android:text="@string/reported"
+        style="@style/Theme.Quiet.Toolbar"/>
 
     <TextView
         android:id="@+id/score"
         android:layout_gravity="fill_horizontal"
         android:layout_columnWeight="1"
         android:layout_rowWeight="1"
-        android:gravity="right"
-        android:text="50"/>
+        android:gravity="right|end|center_vertical"
+        android:paddingRight="@dimen/small"
+        android:paddingEnd="@dimen/small" />
 
     <TextView
         android:id="@+id/times"
         android:layout_gravity="fill_horizontal"
         android:layout_columnWeight="1"
         android:layout_rowWeight="1"
-        android:gravity="left"
-        android:text="times"/>
+        android:gravity="left|start|center_vertical"
+        android:textAllCaps="true"
+        android:paddingLeft="@dimen/small"
+        android:paddingStart="@dimen/small"
+        android:text="@string/times"/>
 
-    <com.github.lzyzsd.circleprogress.DonutProgress
+    <com.github.lzyzsd.circleprogress.ArcProgress
         android:id="@+id/ad"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
         android:layout_columnWeight="1"
         android:layout_rowWeight="2"
-        app:donut_progress="75"/>
+        app:arc_finished_color="@color/primary_dark"
+        app:arc_unfinished_color="@color/primary"
+        app:arc_text_color="@color/primary_dark"
+        app:arc_bottom_text="ADS"/>
 
-    <com.github.lzyzsd.circleprogress.DonutProgress
+    <com.github.lzyzsd.circleprogress.ArcProgress
         android:id="@+id/scam"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
         android:layout_columnWeight="1"
         android:layout_rowWeight="2"
-        app:donut_progress="20"/>
-
-    <TextView
-        android:layout_columnSpan="2"
-        android:layout_rowSpan="2"
-        android:layout_gravity="fill_horizontal"
-        android:gravity="center"
-        android:layout_rowWeight="1"
-        android:text="More features in next versions of the applications"/>
+        app:arc_finished_color="@color/primary_dark"
+        app:arc_unfinished_color="@color/primary"
+        app:arc_text_color="@color/primary_dark"
+        app:arc_bottom_text="SCAMS"/>
 </GridLayout>

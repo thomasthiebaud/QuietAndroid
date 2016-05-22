@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -17,8 +18,6 @@ import com.thomasthiebaud.quiet.R;
 import com.thomasthiebaud.quiet.contract.DatabaseContract;
 import com.thomasthiebaud.quiet.contract.IntentContract;
 import com.thomasthiebaud.quiet.contract.LoaderContract;
-
-import java.util.Arrays;
 
 public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = DetailsActivity.class.getSimpleName();
@@ -71,7 +70,6 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         switch (loader.getId()) {
             case LoaderContract.PHONE_LOADER:
                 if(data != null && data.moveToFirst()) {
-                    Log.e(TAG, Arrays.toString(data.getColumnNames()));
                     String number = data.getString(DatabaseContract.Phone.INDEX_NUMBER);
                     int score = data.getInt(DatabaseContract.Phone.INDEX_SCORE);
                     int scam = data.getInt(DatabaseContract.Phone.INDEX_SCAM);
@@ -81,8 +79,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
                     TextView numberView = (TextView) findViewById(R.id.number);
                     TextView scoreView = (TextView) findViewById(R.id.score);
-                    DonutProgress scamView = (DonutProgress) findViewById(R.id.scam);
-                    DonutProgress adView = (DonutProgress) findViewById(R.id.ad);
+                    ArcProgress adView = (ArcProgress) findViewById(R.id.ad);
+                    ArcProgress scamView = (ArcProgress) findViewById(R.id.scam);
 
                     numberView.setText(number);
                     scoreView.setText(score + "");
@@ -94,7 +92,5 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
+    public void onLoaderReset(Loader<Cursor> loader) {}
 }

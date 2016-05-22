@@ -1,4 +1,29 @@
 <resources>
     <string name="app_name">Quiet</string>
-    <string name="sign_in">Sign in with Google</string>
+    <string name="authenticate">Authenticate with Google</string>
+    <string name="running_app_title">The app is running !</string>
+    <string name="running_app_description">You can safely close this view. A notification will popup if the incoming call is reported as a scam or an ad.</string>
+    <string name="error">Error</string>
+    <string name="connection_failed">Connection failed !</string>
+    <string name="permission_denied_description">Read phone state and contacts permissions are needed to check if a call is dangerous.</string>
+    <string name="incoming_call_from">Incoming call from</string>
+    <string name="reported">Reported</string>
+    <string name="times">times</string>
+    <string name="call_feedback">How was your last call ?</string>
+    <string name="ad">Ad</string>
+    <string name="ok">Ok</string>
+    <string name="scam">Scam</string>
+
+    <plurals name="report_ad">
+        <item quantity="one">- %1$s time as an ad</item>
+        <item quantity="other">- %1$s times as an ad</item>
+    </plurals>
+    <plurals name="report_scam">
+        <item quantity="one">- %1$s time as a scam</item>
+        <item quantity="other">- %1$s times as a scam</item>
+    </plurals>
+    <plurals name="report_score">
+        <item quantity="one">Reported %1$s time :</item>
+        <item quantity="other">Reported %1$s times :</item>
+    </plurals>
 </resources>

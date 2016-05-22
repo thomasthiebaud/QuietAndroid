@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 
 import com.thomasthiebaud.quiet.R;
+import com.thomasthiebaud.quiet.contract.IntentContract;
 
 /**
  * Created by thomasthiebaud on 5/21/16.
@@ -15,7 +16,7 @@ import com.thomasthiebaud.quiet.R;
 public class QuietWidget extends AppWidgetProvider {
     public static final String TAG = QuietWidget.class.getSimpleName();
 
-    private String state = "Quiet is running";
+    private String status = "Quiet is running";
     private int icon = R.drawable.running;
 
     @Override
@@ -29,7 +30,7 @@ public class QuietWidget extends AppWidgetProvider {
 
     private RemoteViews getRemoteViews(Context context) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-        remoteViews.setTextViewText(R.id.state, this.state);
+        remoteViews.setTextViewText(R.id.status, this.status);
         remoteViews.setImageViewResource(R.id.icon, this.icon);
         return remoteViews;
     }
@@ -43,8 +44,8 @@ public class QuietWidget extends AppWidgetProvider {
                 ComponentName thisWidget = new ComponentName(context, QuietWidget.class);
                 int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
                 if (appWidgetIds != null && appWidgetIds.length > 0) {
-                    this.icon = intent.getIntExtra("icon", R.drawable.running);
-                    this.state = intent.getStringExtra("state");
+                    this.icon = intent.getIntExtra(IntentContract.ICON, R.drawable.running);
+                    this.status = intent.getStringExtra(IntentContract.STATUS);
                     onUpdate(context, appWidgetManager, appWidgetIds);
                 }
 

@@ -2,5 +2,11 @@
 <resources>
     <color name="primary">#607d8b</color>
     <color name="primary_dark">#37474f</color>
-    <color name="accent">#ff9800</color>
+    <color name="accent">#03A9F4</color>
+
+    <color name="success">#8BC341</color>
+    <color name="warning">#FFC107</color>
+    <color name="error">#F44336</color>
+
+    <color name="white">#FFFFFF</color>
 </resources>

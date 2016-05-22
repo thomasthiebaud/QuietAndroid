@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -24,7 +23,6 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.karumi.dexter.listener.multi.SnackbarOnAnyDeniedMultiplePermissionsListener;
 import com.thomasthiebaud.quiet.BuildConfig;
 import com.thomasthiebaud.quiet.utils.Body;
 import com.thomasthiebaud.quiet.contract.SignInContract;
@@ -112,7 +110,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 @Override
                 public void onFailure(Call<Message> call, Throwable t) {
                     Log.e(TAG, t.toString());
-                    DisplayActivity.displayError(getApplicationContext(), t.getMessage());
+                    String title = getResources().getString(R.string.error);
+                    DisplayActivity.displayError(getApplicationContext(), title, t.getMessage());
                 }
             });
         } else {
@@ -134,10 +133,13 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         Dexter.checkPermissions(new MultiplePermissionsListener() {
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport report) {
-                if(report.areAllPermissionsGranted())
-                    DisplayActivity.displaySuccess(getApplicationContext(), "The app is running");
-                else {
-                    Snackbar.make(findViewById(R.id.rootView), "Read phone state and read contacts are needed to check if this incoming call is dangerous.", Snackbar.LENGTH_LONG).show();
+                if(report.areAllPermissionsGranted()) {
+                    String title = getResources().getString(R.string.running_app_title);
+                    String description = getResources().getString(R.string.running_app_description);
+                    DisplayActivity.displaySuccess(getApplicationContext(),title, description);
+                } else {
+                    String description = getResources().getString(R.string.permission_denied_description);
+                    Snackbar.make(findViewById(R.id.rootView), description, Snackbar.LENGTH_LONG).show();
                 }
             }
 
@@ -156,7 +158,9 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        DisplayActivity.displayError(getApplicationContext(), "Google connection failed");
+        String title = getResources().getString(R.string.error);
+        String description = getResources().getString(R.string.connection_failed);
+        DisplayActivity.displayError(getApplicationContext(), title, description);
     }
 
     @Override
