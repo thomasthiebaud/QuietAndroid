@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.transition.Explode;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -45,6 +47,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
     private GoogleApiClient mGoogleApiClient;
     private Tracker tracker;
+    private Button signIn;
+    private ProgressBar progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +60,12 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
         Dexter.initialize(this);
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
+        signIn = (Button) findViewById(R.id.sign_in_button);
+        progress = (ProgressBar) findViewById(R.id.progress);
+
+        signIn.setOnClickListener(this);
+        signIn.setEnabled(false);
+        progress.setVisibility(View.VISIBLE);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(BuildConfig.QUIET_SERVER_ID)
@@ -79,6 +88,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             GoogleSignInResult result = opr.get();
             handleSignInResult(result);
         } else {
+            signIn.setEnabled(true);
+            progress.setVisibility(View.GONE);
             opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                 @Override
                 public void onResult(GoogleSignInResult googleSignInResult) {
@@ -120,7 +131,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 public void onFailure(Call<Message> call, Throwable t) {
                     Log.e(TAG, t.toString());
                     String title = getResources().getString(R.string.error);
-                    DisplayActivity.displayError(getApplicationContext(), title, t.getMessage());
+                    //DisplayActivity.displayError(getApplicationContext(), title, t.getMessage());
+                    Snackbar.make(findViewById(R.id.rootView), "Connection failed. Try again", Snackbar.LENGTH_LONG).show();
                 }
             });
         } else {
@@ -173,7 +185,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         String title = getResources().getString(R.string.error);
         String description = getResources().getString(R.string.connection_failed);
-        DisplayActivity.displayError(getApplicationContext(), title, description);
+        Snackbar.make(findViewById(R.id.rootView), "Connection failed", Snackbar.LENGTH_LONG).show();
+        //DisplayActivity.displayError(getApplicationContext(), title, description);
     }
 
     @Override
