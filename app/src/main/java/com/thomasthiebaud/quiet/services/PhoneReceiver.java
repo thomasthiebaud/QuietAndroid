@@ -226,9 +226,9 @@ public class PhoneReceiver extends BroadcastReceiver {
                         .setPriority(Notification.PRIORITY_MAX)
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setAutoCancel(true)
-                        .addAction(R.drawable.reported, context.getString(R.string.ad), pendingIntentAd)
-                        .addAction(R.drawable.safe, context.getString(R.string.ok), pendingIntentOk)
-                        .addAction(R.drawable.dangerous, context.getString(R.string.scam), pendingIntentScam);
+                        .addAction(R.drawable.reported_bw, context.getString(R.string.ad), pendingIntentAd)
+                        .addAction(R.drawable.safe_bw, context.getString(R.string.ok), pendingIntentOk)
+                        .addAction(R.drawable.dangerous_bw, context.getString(R.string.scam), pendingIntentScam);
 
         Notification noti = builder.build();
 
