@@ -52,15 +52,6 @@ public final class DisplayActivity extends AppCompatActivity {
         tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-    public static void displayError(Context context, String title, String description) {
-        Intent intent = new Intent(context, DisplayActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(IntentContract.ICON, R.drawable.error);
-        intent.putExtra(IntentContract.TITLE, title);
-        intent.putExtra(IntentContract.DESCRIPTION, description);
-        context.startActivity(intent);
-    }
-
     public static void displaySuccess(Context context, String title, String description) {
         Intent intent = new Intent(context, DisplayActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

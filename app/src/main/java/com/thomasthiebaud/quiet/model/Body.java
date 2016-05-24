@@ -1,4 +1,4 @@
-package com.thomasthiebaud.quiet.utils;
+package com.thomasthiebaud.quiet.model;
 
 import java.util.HashMap;
 

@@ -9,9 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.ContactsContract;
@@ -19,15 +17,15 @@ import android.support.v4.app.NotificationCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.thomasthiebaud.quiet.R;
 import com.thomasthiebaud.quiet.contract.DatabaseContract;
 import com.thomasthiebaud.quiet.model.Content;
 import com.thomasthiebaud.quiet.model.Message;
-import com.thomasthiebaud.quiet.utils.Body;
+import com.thomasthiebaud.quiet.utils.AuthCallback;
+import com.thomasthiebaud.quiet.utils.AuthUtils;
+import com.thomasthiebaud.quiet.model.Body;
 import com.thomasthiebaud.quiet.app.DetailsActivity;
-import com.thomasthiebaud.quiet.app.DisplayActivity;
 import com.thomasthiebaud.quiet.utils.Utils;
 import com.thomasthiebaud.quiet.contract.IntentContract;
 import com.thomasthiebaud.quiet.contract.NotificationContract;
@@ -98,7 +96,7 @@ public class PhoneReceiver extends BroadcastReceiver {
 
     private void reportPhone(String number, boolean isAd) {
         String idToken = Utils.getIdToken(context);
-        Body body = new Body()
+        final Body body = new Body()
                 .add("idToken", idToken)
                 .add("number", number);
 
@@ -107,16 +105,26 @@ public class PhoneReceiver extends BroadcastReceiver {
         else
             body.add("ad", false).add("scam", true);
 
-        Call<Message> results = HttpService.getInstance().getQuietApi().reportPhoneNumber(body);
-        results.enqueue(new Callback<Message>() {
+        AuthUtils.getInstance().silentSignIn(new AuthCallback() {
             @Override
-            public void onResponse(Call<Message> call, Response<Message> response) {
-                Log.e(TAG, response.body().getMessage());
+            public void onSuccess(String idToken) {
+                Call<Message> results = HttpService.getInstance().getQuietApi().reportPhoneNumber(body);
+                results.enqueue(new Callback<Message>() {
+                    @Override
+                    public void onResponse(Call<Message> call, Response<Message> response) {
+                        Log.e(TAG, response.body().getMessage());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Message> call, Throwable t) {
+                        Log.e(TAG, t.toString());
+                    }
+                });
             }
 
             @Override
-            public void onFailure(Call<Message> call, Throwable t) {
-                Log.e(TAG, t.toString());
+            public void onError(int code) {
+
             }
         });
     }
@@ -125,60 +133,68 @@ public class PhoneReceiver extends BroadcastReceiver {
         if(this.contactExists(context, incomingNumber))
             return;
 
-        String idToken = Utils.getIdToken(context);
-
-        Call<Message> results = HttpService.getInstance().getQuietApi().checkPhoneNumber(idToken, incomingNumber);
-        results.enqueue(new Callback<Message>() {
+        AuthUtils.getInstance().silentSignIn(new AuthCallback() {
             @Override
-            public void onResponse(Call<Message> call, final Response<Message> response) {
-                if(response.code() == 200) {
-                    final Content content = response.body().getContent();
+            public void onSuccess(String idToken) {
+                Call<Message> results = HttpService.getInstance().getQuietApi().checkPhoneNumber(idToken, incomingNumber);
+                results.enqueue(new Callback<Message>() {
+                    @Override
+                    public void onResponse(Call<Message> call, final Response<Message> response) {
+                        if(response.code() == 200) {
+                            final Content content = response.body().getContent();
 
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseContract.Phone.COLUMN_NUMBER, content.getNumber());
-                    values.put(DatabaseContract.Phone.COLUMN_SCORE, content.getScore());
-                    values.put(DatabaseContract.Phone.COLUMN_SCAM, content.getScam());
-                    values.put(DatabaseContract.Phone.COLUMN_AD, content.getAd());
+                            ContentValues values = new ContentValues();
+                            values.put(DatabaseContract.Phone.COLUMN_NUMBER, content.getNumber());
+                            values.put(DatabaseContract.Phone.COLUMN_SCORE, content.getScore());
+                            values.put(DatabaseContract.Phone.COLUMN_SCAM, content.getScam());
+                            values.put(DatabaseContract.Phone.COLUMN_AD, content.getAd());
 
-                    context.getContentResolver().insert(
-                            DatabaseContract.PHONE_CONTENT_URI.buildUpon().appendPath(incomingNumber).build(),
-                            values
-                    );
+                            context.getContentResolver().insert(
+                                    DatabaseContract.PHONE_CONTENT_URI.buildUpon().appendPath(incomingNumber).build(),
+                                    values
+                            );
 
-                    new Handler().postDelayed(new Runnable() {
-                        public void run() {
-                            createIncomingCallNotification(content);
+                            new Handler().postDelayed(new Runnable() {
+                                public void run() {
+                                    createIncomingCallNotification(content);
+                                }
+                            }, 500);
                         }
-                    }, 500);
-                }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Message> call, Throwable t) {
+                        Log.e(TAG, t.toString());
+                        Cursor cursor = context.getContentResolver().query(
+                                DatabaseContract.PHONE_CONTENT_URI.buildUpon().appendPath(incomingNumber).build(),
+                                null,
+                                DatabaseContract.Phone.COLUMN_NUMBER + "= ?",
+                                new String[]{incomingNumber},
+                                null
+                        );
+
+                        try {
+                            if (cursor.moveToFirst()) {
+                                Content content = new Content();
+                                content.setNumber(cursor.getString(DatabaseContract.Phone.INDEX_NUMBER));
+                                content.setScore(cursor.getInt(DatabaseContract.Phone.INDEX_SCORE));
+                                content.setAd(cursor.getInt(DatabaseContract.Phone.INDEX_AD));
+                                content.setScam(cursor.getInt(DatabaseContract.Phone.INDEX_SCAM));
+                                createIncomingCallNotification(content);
+                            } else {
+                                Log.e(TAG, "Number not cached into the local database");
+                            }
+                        } finally {
+                            if (cursor != null)
+                                cursor.close();
+                        }
+                    }
+                });
             }
 
             @Override
-            public void onFailure(Call<Message> call, Throwable t) {
-                Log.e(TAG, t.toString());
-                Cursor cursor = context.getContentResolver().query(
-                        DatabaseContract.PHONE_CONTENT_URI.buildUpon().appendPath(incomingNumber).build(),
-                        null,
-                        DatabaseContract.Phone.COLUMN_NUMBER + "= ?",
-                        new String[]{incomingNumber},
-                        null
-                );
+            public void onError(int code) {
 
-                try {
-                    if (cursor.moveToFirst()) {
-                        Content content = new Content();
-                        content.setNumber(cursor.getString(DatabaseContract.Phone.INDEX_NUMBER));
-                        content.setScore(cursor.getInt(DatabaseContract.Phone.INDEX_SCORE));
-                        content.setAd(cursor.getInt(DatabaseContract.Phone.INDEX_AD));
-                        content.setScam(cursor.getInt(DatabaseContract.Phone.INDEX_SCAM));
-                        createIncomingCallNotification(content);
-                    } else {
-                        Log.e(TAG, "Number not cached into the local database");
-                    }
-                } finally {
-                    if (cursor != null)
-                        cursor.close();
-                }
             }
         });
     }

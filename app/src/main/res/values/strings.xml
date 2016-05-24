@@ -4,7 +4,7 @@
     <string name="running_app_title">The app is running !</string>
     <string name="running_app_description">You can safely close this view. A notification will popup if the incoming call is reported as a scam or an ad.</string>
     <string name="error">Error</string>
-    <string name="connection_failed">Connection failed !</string>
+    <string name="connection_failed">The connection failed ! Make sure you are connected to internet.</string>
     <string name="permission_denied_description">Read phone state and contacts permissions are needed to check if a call is dangerous.</string>
     <string name="incoming_call_from">Incoming call from</string>
     <string name="reported">Reported</string>
@@ -19,6 +19,9 @@
     <string name="dangerous">Dangerous</string>
     <string name="call_from">Call from :</string>
     <string name="quiet_is_not_running">Quiet is not running</string>
+    <string name="unknown_error">An unknown error occured</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="authenticating">Authenticating ...</string>
 
     <plurals name="report_ad">
         <item quantity="one">- %1$s time as an ad</item>
