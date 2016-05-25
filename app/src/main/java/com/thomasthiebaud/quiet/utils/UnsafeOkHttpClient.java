@@ -14,10 +14,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
- * Created by thomasthiebaud on 4/30/16.
+ * Created by thomasthiebaud on 5/25/16.
+ *
+ * This component MUST only be use in dev and local env.
  */
-public final class CustomTrust {
-    public static OkHttpClient getUnsafeOkHttpClient() {
+public final class UnsafeOkHttpClient {
+    public static OkHttpClient get() {
         try {
             // Create a trust manager that does not validate certificate chains
             final TrustManager[] trustAllCerts = new TrustManager[] {
@@ -52,9 +54,9 @@ public final class CustomTrust {
                 }
             });
             builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .connectTimeout(1, TimeUnit.SECONDS)
-                .readTimeout(1, TimeUnit.SECONDS)
-                .retryOnConnectionFailure(false);
+                    .connectTimeout(1, TimeUnit.SECONDS)
+                    .readTimeout(1, TimeUnit.SECONDS)
+                    .retryOnConnectionFailure(false);
             OkHttpClient okHttpClient = builder.build();
             return okHttpClient;
         } catch (Exception e) {

@@ -21,12 +21,14 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.thomasthiebaud.quiet.contract.ErrorContract;
 import com.thomasthiebaud.quiet.utils.AuthCallback;
-import com.thomasthiebaud.quiet.utils.AuthUtils;
-import com.thomasthiebaud.quiet.contract.SignInContract;
+import com.thomasthiebaud.quiet.utils.Authentication;
+import com.thomasthiebaud.quiet.contract.AuthenticationContract;
 import com.thomasthiebaud.quiet.R;
-import com.thomasthiebaud.quiet.utils.Utils;
+import com.thomasthiebaud.quiet.utils.Quiet;
+import com.thomasthiebaud.quiet.utils.DismissSnackbar;
+import com.thomasthiebaud.quiet.utils.ErrorHandler;
+import com.thomasthiebaud.quiet.utils.Widget;
 
 import java.util.List;
 
@@ -48,7 +50,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         tracker = application.getDefaultTracker();
 
         Dexter.initialize(this);
-        AuthUtils.initialize(this, this, this);
+        Authentication.initialize(this, this, this);
 
         signIn = (Button) findViewById(R.id.sign_in_button);
         signIn.setOnClickListener(this);
@@ -64,31 +66,12 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             public void onError(int errorCode) {
                 authSnackbar.dismiss();
-                String message = "";
-                boolean hide = false;
-                switch (errorCode) {
-                    case ErrorContract.UNKNOWN_ERROR:
-                        message = getString(R.string.unknown_error);
-                        break;
-                    case ErrorContract.CONNECTION_ERROR:
-                        message = getString(R.string.connection_failed);
-                        break;
-                    case ErrorContract.SIGN_IN_REQUIRED:
-                        hide = true;
-                        break;
-                }
-
-                if(hide)
+                String message = ErrorHandler.getStandardMessage(getApplicationContext(), errorCode);
+                Log.e(TAG, errorCode + "");
+                if(errorCode == ErrorHandler.SIGN_IN_REQUIRED)
                     return;
 
-                final Snackbar snackBar = Snackbar.make(findViewById(R.id.rootView), message, Snackbar.LENGTH_INDEFINITE);
-                snackBar.setAction(getString(R.string.dismiss), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        snackBar.dismiss();
-                    }
-                });
-                snackBar.show();
+                DismissSnackbar.make(getApplicationContext(), findViewById(R.id.rootView), message).show();
             }
         };
     }
@@ -97,7 +80,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     public void onStart() {
         super.onStart();
         authSnackbar.show();
-        AuthUtils.getInstance().silentSignIn(authResultCallback);
+        Authentication.getInstance().silentSignIn(authResultCallback);
     }
 
     @Override
@@ -117,9 +100,9 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == SignInContract.SIGN_IN_REQUEST_CODE) {
+        if (requestCode == AuthenticationContract.SIGN_IN_REQUEST_CODE) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            AuthUtils.getInstance().handleSignInResult(result, authResultCallback);
+            Authentication.getInstance().handleSignInResult(result, authResultCallback);
         }
     }
 
@@ -129,22 +112,16 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             public void onPermissionsChecked(MultiplePermissionsReport report) {
                 if(report.areAllPermissionsGranted()) {
                     Context context = getApplicationContext();
-                    Utils.isRunning(context, true);
-                    Utils.updateWidget(context, R.drawable.running, context.getString(R.string.quiet_is_running));
+
+                    Quiet.start(context);
+                    Widget.idle(context);
 
                     String title = getResources().getString(R.string.running_app_title);
                     String description = getResources().getString(R.string.running_app_description);
-                    DisplayActivity.displaySuccess(getApplicationContext(),title, description);
+                    DisplayActivity.displaySuccess(context,title, description);
                 } else {
                     String description = getResources().getString(R.string.permission_denied_description);
-                    final Snackbar snackBar = Snackbar.make(findViewById(R.id.rootView), description, Snackbar.LENGTH_INDEFINITE);
-                    snackBar.setAction(getString(R.string.dismiss), new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            snackBar.dismiss();
-                        }
-                    });
-                    snackBar.show();
+                    DismissSnackbar.make(getApplicationContext(), findViewById(R.id.rootView), description).show();
                 }
             }
 
@@ -157,21 +134,16 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
     private void signIn() {
         authSnackbar.show();
-        Intent signInIntent = AuthUtils.getInstance().signIn();
-        startActivityForResult(signInIntent, SignInContract.SIGN_IN_REQUEST_CODE);
+        Intent signInIntent = Authentication.getInstance().signIn();
+        startActivityForResult(signInIntent, AuthenticationContract.SIGN_IN_REQUEST_CODE);
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        final Snackbar snackBar = Snackbar.make(findViewById(R.id.rootView), getString(R.string.connection_failed) + " WAZAA", Snackbar.LENGTH_INDEFINITE);
-        snackBar.setAction(getString(R.string.dismiss), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackBar.dismiss();
-            }
-        });
-        snackBar.show();
+        int errorCode = ErrorHandler.handleResultError(connectionResult.getErrorCode());
+        String message = ErrorHandler.getStandardMessage(getApplicationContext(), errorCode);
+        DismissSnackbar.make(getApplicationContext(), findViewById(R.id.rootView), message).show();
     }
 
     @Override

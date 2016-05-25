@@ -18,4 +18,5 @@ public interface IntentContract {
     String AD_ACTION = "com.thomasthiebaud.quiet.AD";
     String OK_ACTION = "com.thomasthiebaud.quiet.OK";
     String SCAM_ACTION = "com.thomasthiebaud.quiet.SCAM";
+    String PHONE_STATE = "android.intent.action.PHONE_STATE";
 }

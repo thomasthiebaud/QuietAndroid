@@ -22,6 +22,8 @@
     <string name="unknown_error">An unknown error occured</string>
     <string name="dismiss">Dismiss</string>
     <string name="authenticating">Authenticating ...</string>
+    <string name="signin">Sign in</string>
+    <string name="wrong_format">Unknown response format from server</string>
 
     <plurals name="report_ad">
         <item quantity="one">- %1$s time as an ad</item>

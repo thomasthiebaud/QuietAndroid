@@ -1,7 +1,6 @@
 package com.thomasthiebaud.quiet.services;
 
-import com.thomasthiebaud.quiet.BuildConfig;
-import com.thomasthiebaud.quiet.utils.CustomTrust;
+import com.thomasthiebaud.quiet.utils.UnsafeOkHttpClient;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -17,7 +16,7 @@ public final class HttpService {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://172.17.0.3:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(CustomTrust.getUnsafeOkHttpClient())
+                .client(UnsafeOkHttpClient.get())
                 .build();
 
         quietApi = retrofit.create(QuietApi.class);

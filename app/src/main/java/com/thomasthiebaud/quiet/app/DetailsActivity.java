@@ -12,14 +12,13 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.github.lzyzsd.circleprogress.ArcProgress;
-import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.thomasthiebaud.quiet.R;
 import com.thomasthiebaud.quiet.contract.DatabaseContract;
 import com.thomasthiebaud.quiet.contract.IntentContract;
 import com.thomasthiebaud.quiet.contract.LoaderContract;
-import com.thomasthiebaud.quiet.utils.Utils;
+import com.thomasthiebaud.quiet.utils.Quiet;
 
 public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = DetailsActivity.class.getSimpleName();
@@ -39,7 +38,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
         Intent intent = getIntent();
         this.number = intent.getStringExtra(IntentContract.PHONE_NUMBER);
-        Utils.removeNumber(getApplicationContext());
+        Quiet.removeNumber(getApplicationContext());
 
         getSupportLoaderManager().initLoader(LoaderContract.PHONE_LOADER, null, this);
     }

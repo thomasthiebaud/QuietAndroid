@@ -11,7 +11,7 @@ import android.widget.RemoteViews;
 import com.thomasthiebaud.quiet.R;
 import com.thomasthiebaud.quiet.app.DetailsActivity;
 import com.thomasthiebaud.quiet.contract.IntentContract;
-import com.thomasthiebaud.quiet.utils.Utils;
+import com.thomasthiebaud.quiet.utils.Quiet;
 
 /**
  * Created by thomasthiebaud on 5/21/16.
@@ -33,7 +33,7 @@ public class QuietWidget extends AppWidgetProvider {
 
     private RemoteViews getRemoteViews(Context context) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-        if(Utils.isRunning(context)) {
+        if(Quiet.isRunning(context)) {
             if(status == null || status.isEmpty() || icon == 0) {
                 remoteViews.setTextViewText(R.id.status, context.getString(R.string.quiet_is_running));
                 remoteViews.setImageViewResource(R.id.icon, R.drawable.running);
@@ -46,7 +46,7 @@ public class QuietWidget extends AppWidgetProvider {
             remoteViews.setImageViewResource(R.id.icon, R.drawable.dangerous);
         }
 
-        String number = Utils.getNumber(context);
+        String number = Quiet.getNumber(context);
         if(number != null && !number.isEmpty()) {
             Intent intent = new Intent(context, DetailsActivity.class);
             intent.putExtra(IntentContract.PHONE_NUMBER, number);

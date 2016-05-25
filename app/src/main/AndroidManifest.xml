@@ -29,7 +29,7 @@
             android:authorities="com.thomasthiebaud.quiet"
             android:name=".database.QuietProvider" />
 
-        <receiver android:name=".services.PhoneReceiver">
+        <receiver android:name=".services.CallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
                 <action android:name="com.thomasthiebaud.quiet.AD"/>
