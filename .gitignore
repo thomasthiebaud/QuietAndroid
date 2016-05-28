@@ -6,6 +6,11 @@
 app/google-services.json
 
 
+# Keystore files except the one for udacity review
+*.jks
+!app/quietForUdacity.jks
+
+
 ### Linux ###
 *~
 
@@ -105,9 +110,6 @@ captures/
 
 # Intellij
 *.iml
-
-# Keystore files
-*.jks
 
 ### Android Patch ###
 gen-external-apklibs

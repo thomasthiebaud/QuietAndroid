@@ -11,10 +11,19 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        release {
+            storeFile file("./quietForUdacity.jks")
+            storePassword "azertyuiop"
+            keyAlias "QuietForUdacity"
+            keyPassword "azertyuiop"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         buildTypes.each {
             it.buildConfigField 'String', 'QUIET_SERVER_ID', QuietServerId
@@ -27,20 +36,17 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:design:23.3.0'
-
     compile 'com.google.android.gms:play-services-auth:9.0.0'
     compile 'com.google.android.gms:play-services-analytics:9.0.0'
-
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
     compile 'com.karumi:dexter:2.2.2'
-
     compile 'com.github.lzyzsd:circleprogress:1.1.0@aar'
 }
 
