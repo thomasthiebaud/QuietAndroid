@@ -1,4 +1,4 @@
-package com.thomasthiebaud.quiet.utils;
+package com.thomasthiebaud.quiet.component;
 
 import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;

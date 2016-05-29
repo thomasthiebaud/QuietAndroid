@@ -2,13 +2,16 @@ package com.thomasthiebaud.quiet.app;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.lzyzsd.circleprogress.ArcProgress;
@@ -20,27 +23,80 @@ import com.thomasthiebaud.quiet.contract.IntentContract;
 import com.thomasthiebaud.quiet.contract.LoaderContract;
 import com.thomasthiebaud.quiet.utils.Quiet;
 
-public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+import de.hdodenhof.circleimageview.CircleImageView;
+
+/**
+ * Created by thomasthiebaud on 5/29/16.
+ * This code is base on https://github.com/saulmm/CoordinatorBehaviorExample
+ */
+public class DetailsActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener, LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = DetailsActivity.class.getSimpleName();
+    private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR  = 0.9f;
+    private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS     = 0.3f;
+    private static final int ALPHA_ANIMATIONS_DURATION              = 200;
+
     private Tracker tracker;
     private String number;
+    private String status;
+    private int icon;
+
+    private boolean mIsTheTitleVisible          = false;
+    private boolean mIsTheTitleContainerVisible = true;
+
+    private LinearLayout mTitleContainer;
+    private TextView mTitle;
+    private AppBarLayout mAppBarLayout;
+    private Toolbar mToolbar;
+    private CircleImageView circleImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        bindActivity();
+
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         tracker = application.getDefaultTracker();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.details));
-
         Intent intent = getIntent();
         this.number = intent.getStringExtra(IntentContract.PHONE_NUMBER);
+        this.status = intent.getStringExtra(IntentContract.STATUS);
+        this.icon = intent.getIntExtra(IntentContract.ICON, R.drawable.safe);
+
+        TextView numberView = (TextView) findViewById(R.id.number);
+        numberView.setText(number);
+        TextView satusView = (TextView) findViewById(R.id.status);
+        satusView.setText(status);
+
+        mTitle.setText(number);
+
+        circleImageView.setImageResource(icon);
+
         Quiet.removeNumber(getApplicationContext());
 
         getSupportLoaderManager().initLoader(LoaderContract.PHONE_LOADER, null, this);
+
+        mAppBarLayout.addOnOffsetChangedListener(this);
+        startAlphaAnimation(mTitle, 0, View.INVISIBLE);
+    }
+
+    private void bindActivity() {
+        mToolbar        = (Toolbar) findViewById(R.id.main_toolbar);
+        mTitle          = (TextView) findViewById(R.id.main_textview_title);
+        mTitleContainer = (LinearLayout) findViewById(R.id.main_linearlayout_title);
+        mAppBarLayout   = (AppBarLayout) findViewById(R.id.main_appbar);
+        circleImageView = (CircleImageView) findViewById(R.id.circleimageview);
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
+        int maxScroll = appBarLayout.getTotalScrollRange();
+        float percentage = (float) Math.abs(offset) / (float) maxScroll;
+
+        handleAlphaOnTitle(percentage);
+        handleToolbarTitleVisibility(percentage);
     }
 
     @Override
@@ -50,10 +106,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.e(TAG, "Load");
         CursorLoader cursorLoader = null;
         switch (id) {
             case LoaderContract.PHONE_LOADER:
@@ -99,5 +153,48 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         loader.reset();
+    }
+
+    private void handleToolbarTitleVisibility(float percentage) {
+        if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
+
+            if(!mIsTheTitleVisible) {
+                startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
+                mIsTheTitleVisible = true;
+            }
+
+        } else {
+
+            if (mIsTheTitleVisible) {
+                startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
+                mIsTheTitleVisible = false;
+            }
+        }
+    }
+
+    private void handleAlphaOnTitle(float percentage) {
+        if (percentage >= PERCENTAGE_TO_HIDE_TITLE_DETAILS) {
+            if(mIsTheTitleContainerVisible) {
+                startAlphaAnimation(mTitleContainer, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
+                mIsTheTitleContainerVisible = false;
+            }
+
+        } else {
+
+            if (!mIsTheTitleContainerVisible) {
+                startAlphaAnimation(mTitleContainer, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
+                mIsTheTitleContainerVisible = true;
+            }
+        }
+    }
+
+    public static void startAlphaAnimation (View v, long duration, int visibility) {
+        AlphaAnimation alphaAnimation = (visibility == View.VISIBLE)
+                ? new AlphaAnimation(0f, 1f)
+                : new AlphaAnimation(1f, 0f);
+
+        alphaAnimation.setDuration(duration);
+        alphaAnimation.setFillAfter(true);
+        v.startAnimation(alphaAnimation);
     }
 }

@@ -26,7 +26,7 @@ import com.thomasthiebaud.quiet.utils.Authentication;
 import com.thomasthiebaud.quiet.contract.AuthenticationContract;
 import com.thomasthiebaud.quiet.R;
 import com.thomasthiebaud.quiet.utils.Quiet;
-import com.thomasthiebaud.quiet.utils.DismissSnackbar;
+import com.thomasthiebaud.quiet.component.DismissSnackbar;
 import com.thomasthiebaud.quiet.utils.ErrorHandler;
 import com.thomasthiebaud.quiet.utils.Widget;
 

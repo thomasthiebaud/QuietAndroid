@@ -1,4 +1,4 @@
-package com.thomasthiebaud.quiet.utils;
+package com.thomasthiebaud.quiet.component;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;

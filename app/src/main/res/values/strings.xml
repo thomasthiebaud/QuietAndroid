@@ -24,6 +24,9 @@
     <string name="authenticating">Authenticating ...</string>
     <string name="signin">Sign in</string>
     <string name="wrong_format">Unknown response format from server</string>
+    <string name="score_label">Number of times reported</string>
+    <string name="scams">SCAMS</string>
+    <string name="Ads">ADS</string>
 
     <plurals name="report_ad">
         <item quantity="one">- %1$s time as an ad</item>

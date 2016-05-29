@@ -1,6 +1,6 @@
 package com.thomasthiebaud.quiet.services;
 
-import com.thomasthiebaud.quiet.utils.UnsafeOkHttpClient;
+import com.thomasthiebaud.quiet.component.UnsafeOkHttpClient;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.thomasthiebaud.quiet">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -23,32 +23,33 @@
             </intent-filter>
         </activity>
         <activity android:name=".app.DisplayActivity" />
-        <activity android:name=".app.DetailsActivity" />
 
         <provider
-            android:authorities="com.thomasthiebaud.quiet"
-            android:name=".database.QuietProvider" />
+            android:name=".database.QuietProvider"
+            android:authorities="com.thomasthiebaud.quiet" />
 
         <receiver android:name=".services.CallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
-                <action android:name="com.thomasthiebaud.quiet.AD"/>
-                <action android:name="com.thomasthiebaud.quiet.OK"/>
-                <action android:name="com.thomasthiebaud.quiet.SCAM"/>
+                <action android:name="com.thomasthiebaud.quiet.AD" />
+                <action android:name="com.thomasthiebaud.quiet.OK" />
+                <action android:name="com.thomasthiebaud.quiet.SCAM" />
             </intent-filter>
         </receiver>
-
-        <receiver android:name=".widget.QuietWidget" >
+        <receiver android:name=".widget.QuietWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <intent-filter>
                 <action android:name="com.thomasthiebaud.quiet.UPDATE_WIDGET_STATE" />
             </intent-filter>
+
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+
+        <activity android:name=".app.DetailsActivity" />
     </application>
 
 </manifest>

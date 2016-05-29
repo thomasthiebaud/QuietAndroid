@@ -18,4 +18,10 @@
 
     <dimen name="text_medium">20sp</dimen>
     <dimen name="text_regular">16sp</dimen>
+    <dimen name="text_big">34sp</dimen>
+
+    <dimen name="progress_size">150dp</dimen>
+    <dimen name="image_size">120dp</dimen>
+    <dimen name="image_final_width">32dp</dimen>
+    <dimen name="spacing_normal">16dp</dimen>
 </resources>

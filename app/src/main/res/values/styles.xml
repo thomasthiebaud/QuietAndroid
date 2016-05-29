@@ -22,6 +22,28 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@color/primary</item>
-        <item name="android:textSize">@dimen/text_regular</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
+    <style name="Theme.Quiet.Toolbar.Title">
+        <item name="android:layout_marginLeft">@dimen/regular</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="Theme.Quiet.Cardview" parent="CardView">
+        <item name="android:layout_margin">@dimen/regular</item>
+        <item name="cardElevation">@dimen/regular</item>
+        <item name="contentPadding">@dimen/big</item>
+    </style>
+
+    <style name="Theme.Quiet.ArcProgress">
+        <item name="android:layout_height">@dimen/progress_size</item>
+        <item name="android:layout_width">@dimen/progress_size</item>
+    </style>
+
+    <style name="Theme.Quiet.CircleImageView">
+        <item name="android:layout_width">@dimen/image_size</item>
+        <item name="android:layout_height">@dimen/image_size</item>
+        <item name="android:layout_gravity">center_horizontal</item>
     </style>
 </resources>

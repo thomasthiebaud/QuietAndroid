@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Quiet.Toolbar.Title">
+        <item name="android:layout_marginLeft">@dimen/regular</item>
+        <item name="android:layout_marginStart">@dimen/regular</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+</resources>

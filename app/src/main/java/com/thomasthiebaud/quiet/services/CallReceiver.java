@@ -19,13 +19,13 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.thomasthiebaud.quiet.R;
+import com.thomasthiebaud.quiet.app.DetailsActivity;
 import com.thomasthiebaud.quiet.contract.DatabaseContract;
 import com.thomasthiebaud.quiet.model.Content;
 import com.thomasthiebaud.quiet.model.Message;
 import com.thomasthiebaud.quiet.utils.AuthCallback;
 import com.thomasthiebaud.quiet.utils.Authentication;
 import com.thomasthiebaud.quiet.model.Body;
-import com.thomasthiebaud.quiet.app.DetailsActivity;
 import com.thomasthiebaud.quiet.contract.IntentContract;
 import com.thomasthiebaud.quiet.contract.NotificationContract;
 import com.thomasthiebaud.quiet.utils.Widget;
@@ -191,10 +191,6 @@ public class CallReceiver extends BroadcastReceiver {
 
         Intent intent = new Intent(context, DetailsActivity.class);
         intent.putExtra(IntentContract.PHONE_NUMBER, number);
-        intent.putExtra(IntentContract.SCORE, score);
-        intent.putExtra(IntentContract.AD, ad);
-        intent.putExtra(IntentContract.SCAM, scam);
-        PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         Resources res = context.getResources();
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle().addLine(res.getQuantityString(R.plurals.report_score, score, score));
@@ -217,6 +213,10 @@ public class CallReceiver extends BroadcastReceiver {
             icon = R.drawable.dangerous;
             contentText = context.getString(R.string.dangerous);
         }
+
+        intent.putExtra(IntentContract.ICON, icon);
+        intent.putExtra(IntentContract.STATUS, contentText);
+        PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         Widget.ringing(context, number, icon, contentText);
 
