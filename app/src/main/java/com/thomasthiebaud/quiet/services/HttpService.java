@@ -1,5 +1,6 @@
 package com.thomasthiebaud.quiet.services;
 
+import com.thomasthiebaud.quiet.BuildConfig;
 import com.thomasthiebaud.quiet.component.UnsafeOkHttpClient;
 
 import retrofit2.Retrofit;
@@ -14,7 +15,7 @@ public final class HttpService {
 
     private HttpService() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://172.17.0.3:8080/")
+                .baseUrl(BuildConfig.QUIET_SERVER_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(UnsafeOkHttpClient.get())
                 .build();
