@@ -28,6 +28,7 @@ import com.thomasthiebaud.quiet.utils.Authentication;
 import com.thomasthiebaud.quiet.model.Body;
 import com.thomasthiebaud.quiet.contract.IntentContract;
 import com.thomasthiebaud.quiet.contract.NotificationContract;
+import com.thomasthiebaud.quiet.utils.ErrorHandler;
 import com.thomasthiebaud.quiet.utils.Widget;
 
 import retrofit2.Call;
@@ -118,7 +119,9 @@ public class CallReceiver extends BroadcastReceiver {
                 results.enqueue(new Callback<Message>() {
                     @Override
                     public void onResponse(Call<Message> call, final Response<Message> response) {
-                        if(response.code() == 200) {
+                        if(ErrorHandler.handleQuietError(response.code())) {
+                            Log.e(TAG, "onResponse : " + response.body().getMessage());
+                        } else if(response.code() == 200) {
                             final Content content = response.body().getContent();
                             savePhoneIntoDatabase(content);
 
@@ -166,7 +169,11 @@ public class CallReceiver extends BroadcastReceiver {
                 results.enqueue(new Callback<Message>() {
                     @Override
                     public void onResponse(Call<Message> call, Response<Message> response) {
-                        Log.d(TAG, "reportPhone#onResponse : " + response.body().getMessage());
+                        if(ErrorHandler.handleQuietError(response.code())) {
+                            Log.e(TAG, "reportPhone#onResponse : " + response.body().getMessage());
+                        } else {
+                            Log.d(TAG, "reportPhone#onResponse : " + response.body().getMessage());
+                        }
                     }
 
                     @Override

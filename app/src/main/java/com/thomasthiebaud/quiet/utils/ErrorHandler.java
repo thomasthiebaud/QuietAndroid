@@ -16,6 +16,15 @@ public class ErrorHandler {
 
     public static final int SIGN_IN_REQUIRED = 2;
 
+    public static final int BAD_REQUEST = 400;
+    public static final int ACCESS_DENIED = 403;
+    public static final int NOT_FOUND = 404;
+    public static final int INTERNAL_SERVER_ERROR = 500;
+
+    public static boolean handleQuietError(int code) {
+        return code > 400;
+    }
+
     public static int handleRetrofitError(Throwable t) {
         int code = UNKNOWN_ERROR;
         if (t instanceof SocketTimeoutException)
@@ -37,6 +46,14 @@ public class ErrorHandler {
         switch (code) {
             case NETWORK_ERROR:
                 return context.getString(R.string.connection_failed);
+            case BAD_REQUEST:
+                return context.getString(R.string.bad_request);
+            case ACCESS_DENIED:
+                return context.getString(R.string.access_denied);
+            case NOT_FOUND:
+                return context.getString(R.string.not_found);
+            case INTERNAL_SERVER_ERROR:
+                return context.getString(R.string.internal_server_error);
             default:
                 return context.getString(R.string.unknown_error);
         }

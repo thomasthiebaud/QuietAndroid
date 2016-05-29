@@ -87,8 +87,13 @@ public class Authentication {
             results.enqueue(new Callback<Message>() {
                 @Override
                 public void onResponse(Call<Message> call, Response<Message> response) {
-                    Authentication.saveIdToken(context, acct.getIdToken());
-                    callback.onSuccess(acct.getIdToken());
+                    if(ErrorHandler.handleQuietError(response.code())) {
+                        Log.e(TAG, "handleSignInResult#onResponse : " + response.body().getMessage());
+                        callback.onError(response.code());
+                    } else {
+                        Authentication.saveIdToken(context, acct.getIdToken());
+                        callback.onSuccess(acct.getIdToken());
+                    }
                 }
 
                 @Override

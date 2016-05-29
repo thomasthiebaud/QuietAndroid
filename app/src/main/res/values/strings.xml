@@ -27,6 +27,10 @@
     <string name="score_label">Number of times reported</string>
     <string name="scams">SCAMS</string>
     <string name="Ads">ADS</string>
+    <string name="bad_request">Bad request. The request is either incorrect or malformed</string>
+    <string name="access_denied">Access denied. You need some access right to go further</string>
+    <string name="not_found">Not found. The server did not found the requested element</string>
+    <string name="internal_server_error">Internal server error. The server encountered an error and was not able to solve it</string>
 
     <plurals name="report_ad">
         <item quantity="one">- %1$s time as an ad</item>
