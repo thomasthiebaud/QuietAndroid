@@ -8,7 +8,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.LinearLayout;
@@ -40,22 +39,23 @@ public class DetailsActivity extends AppCompatActivity implements AppBarLayout.O
     private String status;
     private int icon;
 
-    private boolean mIsTheTitleVisible          = false;
-    private boolean mIsTheTitleContainerVisible = true;
-
-    private LinearLayout mTitleContainer;
-    private TextView mTitle;
-    private AppBarLayout mAppBarLayout;
-    private Toolbar mToolbar;
+    private LinearLayout titleContainer;
+    private TextView titleView;
+    private AppBarLayout appBarLayout;
     private CircleImageView circleImageView;
+    private TextView numberView;
+    private TextView scoreView;
+    private ArcProgress adView;
+    private ArcProgress scamView;
+    private TextView satusView;
 
+    private boolean mIsTheTitleVisible = false;
+    private boolean mIsTheTitleContainerVisible = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-
-        bindActivity();
 
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         tracker = application.getDefaultTracker();
@@ -65,29 +65,26 @@ public class DetailsActivity extends AppCompatActivity implements AppBarLayout.O
         this.status = intent.getStringExtra(IntentContract.STATUS);
         this.icon = intent.getIntExtra(IntentContract.ICON, R.drawable.safe);
 
-        TextView numberView = (TextView) findViewById(R.id.number);
-        numberView.setText(number);
-        TextView satusView = (TextView) findViewById(R.id.status);
+        titleView = (TextView) findViewById(R.id.main_textview_title);
+        titleContainer = (LinearLayout) findViewById(R.id.main_linearlayout_title);
+        appBarLayout = (AppBarLayout) findViewById(R.id.main_appbar);
+        circleImageView = (CircleImageView) findViewById(R.id.circleimageview);
+        numberView = (TextView) findViewById(R.id.number);
+        scoreView = (TextView) findViewById(R.id.score);
+        adView = (ArcProgress) findViewById(R.id.ad);
+        scamView = (ArcProgress) findViewById(R.id.scam);
+        satusView = (TextView) findViewById(R.id.status);
+        
         satusView.setText(status);
-
-        mTitle.setText(number);
-
+        titleView.setText(number);
         circleImageView.setImageResource(icon);
 
         Quiet.removeNumber(getApplicationContext());
 
         getSupportLoaderManager().initLoader(LoaderContract.PHONE_LOADER, null, this);
 
-        mAppBarLayout.addOnOffsetChangedListener(this);
-        startAlphaAnimation(mTitle, 0, View.INVISIBLE);
-    }
-
-    private void bindActivity() {
-        mToolbar        = (Toolbar) findViewById(R.id.main_toolbar);
-        mTitle          = (TextView) findViewById(R.id.main_textview_title);
-        mTitleContainer = (LinearLayout) findViewById(R.id.main_linearlayout_title);
-        mAppBarLayout   = (AppBarLayout) findViewById(R.id.main_appbar);
-        circleImageView = (CircleImageView) findViewById(R.id.circleimageview);
+        appBarLayout.addOnOffsetChangedListener(this);
+        startAlphaAnimation(titleView, 0, View.INVISIBLE);
     }
 
     @Override
@@ -136,11 +133,6 @@ public class DetailsActivity extends AppCompatActivity implements AppBarLayout.O
                     int scamPercent = scam * 100 / score;
                     int adPercent = ad * 100 / score;
 
-                    TextView numberView = (TextView) findViewById(R.id.number);
-                    TextView scoreView = (TextView) findViewById(R.id.score);
-                    ArcProgress adView = (ArcProgress) findViewById(R.id.ad);
-                    ArcProgress scamView = (ArcProgress) findViewById(R.id.scam);
-
                     numberView.setText(number);
                     scoreView.setText(score + "");
                     scamView.setProgress(scamPercent);
@@ -157,16 +149,13 @@ public class DetailsActivity extends AppCompatActivity implements AppBarLayout.O
 
     private void handleToolbarTitleVisibility(float percentage) {
         if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
-
             if(!mIsTheTitleVisible) {
-                startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
+                startAlphaAnimation(titleView, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 mIsTheTitleVisible = true;
             }
-
         } else {
-
             if (mIsTheTitleVisible) {
-                startAlphaAnimation(mTitle, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
+                startAlphaAnimation(titleView, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
                 mIsTheTitleVisible = false;
             }
         }
@@ -175,14 +164,12 @@ public class DetailsActivity extends AppCompatActivity implements AppBarLayout.O
     private void handleAlphaOnTitle(float percentage) {
         if (percentage >= PERCENTAGE_TO_HIDE_TITLE_DETAILS) {
             if(mIsTheTitleContainerVisible) {
-                startAlphaAnimation(mTitleContainer, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
+                startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.INVISIBLE);
                 mIsTheTitleContainerVisible = false;
             }
-
         } else {
-
             if (!mIsTheTitleContainerVisible) {
-                startAlphaAnimation(mTitleContainer, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
+                startAlphaAnimation(titleContainer, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 mIsTheTitleContainerVisible = true;
             }
         }

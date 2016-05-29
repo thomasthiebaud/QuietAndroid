@@ -143,7 +143,7 @@ public class CallReceiver extends BroadcastReceiver {
 
             @Override
             public void onError(int code) {
-
+                Log.e(TAG, "handlePhoneRinging#onError : " + code);
             }
         });
     }
@@ -166,19 +166,19 @@ public class CallReceiver extends BroadcastReceiver {
                 results.enqueue(new Callback<Message>() {
                     @Override
                     public void onResponse(Call<Message> call, Response<Message> response) {
-                        Log.e(TAG, response.body().getMessage());
+                        Log.d(TAG, "reportPhone#onResponse : " + response.body().getMessage());
                     }
 
                     @Override
                     public void onFailure(Call<Message> call, Throwable t) {
-                        Log.e(TAG, t.toString());
+                        Log.e(TAG, "reportPhone#onFailure : " + t.getMessage());
                     }
                 });
             }
 
             @Override
             public void onError(int code) {
-
+                Log.e(TAG, "reportPhone#onError : " + code);
             }
         });
     }
@@ -205,7 +205,7 @@ public class CallReceiver extends BroadcastReceiver {
             icon = R.drawable.safe;
             contentText = context.getString(R.string.safe);
         }
-        else if(score <= 3 && scam == 0) {
+        else if(scam == 0) {
             icon = R.drawable.reported;
             contentText = context.getString(R.string.reported);
         }
