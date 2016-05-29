@@ -135,7 +135,7 @@ public class CallReceiver extends BroadcastReceiver {
 
                     @Override
                     public void onFailure(Call<Message> call, Throwable t) {
-                        Log.e(TAG, t.toString());
+                        Log.e(TAG, "handlePhoneRinging#onFailure : " + t.toString());
                         Content content = readPhoneFromDatabase(incomingNumber);
 
                         if(content != null)
@@ -147,6 +147,10 @@ public class CallReceiver extends BroadcastReceiver {
             @Override
             public void onError(int code) {
                 Log.e(TAG, "handlePhoneRinging#onError : " + code);
+                Content content = readPhoneFromDatabase(incomingNumber);
+
+                if(content != null)
+                    createIncomingCallNotification(content);
             }
         });
     }
