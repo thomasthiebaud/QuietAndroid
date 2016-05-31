@@ -17,7 +17,7 @@ public final class HttpService {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BuildConfig.QUIET_SERVER_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(UnsafeOkHttpClient.get())
+                //.client(UnsafeOkHttpClient.get()) // Can be uncommented for a debug purpose. The server must be local if uncommented.
                 .build();
 
         quietApi = retrofit.create(QuietApi.class);

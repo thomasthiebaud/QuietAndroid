@@ -88,7 +88,7 @@ public class Authentication {
                 @Override
                 public void onResponse(Call<Message> call, Response<Message> response) {
                     if(ErrorHandler.handleQuietError(response.code())) {
-                        Log.e(TAG, "handleSignInResult#onResponse : " + response.body().getMessage());
+                        Log.e(TAG, "handleSignInResult#onResponse : " + response.body());
                         callback.onError(response.code());
                     } else {
                         Authentication.saveIdToken(context, acct.getIdToken());

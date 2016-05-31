@@ -120,7 +120,7 @@ public class CallReceiver extends BroadcastReceiver {
                     @Override
                     public void onResponse(Call<Message> call, final Response<Message> response) {
                         if(ErrorHandler.handleQuietError(response.code())) {
-                            Log.e(TAG, "onResponse : " + response.body().getMessage());
+                            Log.e(TAG, "onResponse : " + response.body());
                         } else if(response.code() == 200) {
                             final Content content = response.body().getContent();
                             savePhoneIntoDatabase(content);
